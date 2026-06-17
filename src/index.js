@@ -19,8 +19,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// Root Health Check Route
-app.get('/', (req, res) => {
+// Serve Static Files (Developer Dashboard)
+app.use(express.static('public'));
+
+// Health Check Endpoint
+app.get('/api/health', (req, res) => {
   res.status(200).json({
     success: true,
     message: 'Fintech Backend API is active and running.',

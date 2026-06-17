@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fintech Platform Developer Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: rgba(20, 26, 43, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #06b6d4;
+      --accent-hover: #0891b2;
+      --success: #10b981;
+      --error: #ef4444;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    header {
+      padding: 2rem 1.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      background-color: rgba(11, 15, 25, 0.5);
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--success);
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-top: 0.75rem;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      backdrop-filter: blur(16px);
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.75rem 0.5rem;
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: var(--accent);
+      border-radius: 2px;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: rgba(11, 15, 25, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+    }
+
+    button.btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    button.btn-primary:hover {
+      filter: brightness(1.1);
+    }
+
+    button.btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    button.btn-accent {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      color: var(--bg-color);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: filter 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    }
+
+    button.btn-accent:hover {
+      filter: brightness(1.1);
+    }
+
+    button.btn-accent:active {
+      transform: scale(0.98);
+    }
+
+    .console-pane {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .console-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .console-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .console-clear {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .console-clear:hover {
+      color: var(--text-main);
+    }
+
+    .console-body {
+      flex: 1;
+      background: #05070c;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      overflow-y: auto;
+      max-height: 500px;
+      min-height: 350px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .cli-prompt {
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .json-output {
+      color: #a7f3d0;
+    }
+
+    .token-display {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed var(--card-border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      word-break: break-all;
+      margin-top: 1rem;
+      max-height: 80px;
+      overflow-y: auto;
+    }
+
+    .token-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .token-clear {
+      font-size: 0.75rem;
+      cursor: pointer;
+      text-decoration: underline;
+      color: var(--text-muted);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--card-border);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Fintech Developer Dashboard</h1>
+    <p>Visual testing console for core platform API and authentication flow</p>
+    <span class="badge">
+      <span style="display:inline-block; width:8px; height:8px; background:var(--success); border-radius:50%; box-shadow:0 0 8px var(--success)"></span>
+      Backend API Online
+    </span>
+  </header>
+
+  <main>
+    <!-- Left panel: Interactive Forms -->
+    <div class="card">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-register')">Register</button>
+        <button class="tab-btn" onclick="switchTab('tab-login')">Login</button>
+        <button class="tab-btn" onclick="switchTab('tab-profile')">Profile</button>
+      </div>
+
+      <!-- Registration Form -->
+      <div id="tab-register" class="tab-content active">
+        <form id="registerForm" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label for="reg-name">Full Name</label>
+            <input type="text" id="reg-name" placeholder="John Doe" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="reg-email">Email Address</label>
+              <input type="email" id="reg-email" placeholder="johndoe@example.com" required>
+            </div>
+            <div class="form-group">
+              <label for="reg-password">Password</label>
+              <input type="password" id="reg-password" placeholder="••••••••" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reg-phone">Phone Number</label>
+            <input type="text" id="reg-phone" placeholder="+573000000000">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="reg-id-type">Legal ID Type</label>
+              <select id="reg-id-type">
+                <option value="CC">Cédula de Ciudadanía (CC)</option>
+                <option value="CE">Cédula de Extranjería (CE)</option>
+                <option value="NIT">NIT (Business ID)</option>
+                <option value="PP">Passport</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="reg-id">Legal ID Number</label>
+              <input type="text" id="reg-id" placeholder="1234567890">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reg-role">Role</label>
+            <select id="reg-role">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary">Register User</button>
+        </form>
+      </div>
+
+      <!-- Login Form -->
+      <div id="tab-login" class="tab-content">
+        <form id="loginForm" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="log-email">Email Address</label>
+            <input type="email" id="log-email" placeholder="johndoe@example.com" required>
+          </div>
+          <div class="form-group">
+            <label for="log-password">Password</label>
+            <input type="password" id="log-password" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn-accent">Log In</button>
+        </form>
+
+        <div id="token-box" style="display: none;">
+          <div class="token-label">
+            <span>Stored JWT Access Token</span>
+            <span class="token-clear" onclick="clearToken()">Clear</span>
+          </div>
+          <div id="jwt-token" class="token-display"></div>
+        </div>
+      </div>
+
+      <!-- Profile Form -->
+      <div id="tab-profile" class="tab-content">
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+          To access the profile endpoint (<code>GET /api/auth/me</code>), you must first login to obtain a JWT. The token will be sent in the header as <code>Authorization: Bearer &lt;token&gt;</code>.
+        </p>
+        <button onclick="fetchProfile()" class="btn-primary">Fetch My Profile (/me)</button>
+      </div>
+    </div>
+
+    <!-- Right panel: Developer Console -->
+    <div class="card console-pane">
+      <div class="console-header">
+        <h2 class="console-title">Console Output</h2>
+        <button class="console-clear" onclick="clearConsole()">Clear Console</button>
+      </div>
+      <div id="console" class="console-body">
+        <div class="cli-prompt"># Waiting for requests...</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Fintech Scaffold Platform &copy; 2026. Made with vanilla HTML/CSS/JS and Express.</p>
+  </footer>
+
+  <script>
+    // Tab Switching logic
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+
+      if (tabId === 'tab-login') {
+        const token = localStorage.getItem('token');
+        if (token) {
+          document.getElementById('token-box').style.display = 'block';
+          document.getElementById('jwt-token').innerText = token;
+        } else {
+          document.getElementById('token-box').style.display = 'none';
+        }
+      }
+    }
+
+    // Helper to log to CLI
+    function logToConsole(method, url, requestBody, responseStatus, responseBody) {
+      const consoleDiv = document.getElementById('console');
+      
+      let curlCmd = `curl -X ${method} ${window.location.origin}${url} \\\n`;
+      curlCmd += `  -H "Content-Type: application/json"`;
+      
+      const token = localStorage.getItem('token');
+      if (token && url.includes('/me')) {
+        curlCmd += ` \\\n  -H "Authorization: Bearer ${token.substring(0, 15)}..."`;
+      }
+      
+      if (requestBody) {
+        curlCmd += ` \\\n  -d '${JSON.stringify(requestBody, null, 2)}'`;
+      }
+
+      const logHtml = `
+<div style="border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
+  <span style="color: var(--text-muted); font-size: 0.75rem;">${new Date().toLocaleTimeString()}</span>
+  <div class="cli-prompt">$ ${curlCmd}</div>
+  <div style="margin: 0.5rem 0; font-weight: 600; color: ${responseStatus < 400 ? 'var(--success)' : 'var(--error)'}">
+    HTTP/1.1 ${responseStatus} ${getStatusText(responseStatus)}
+  </div>
+  <div class="json-output">${JSON.stringify(responseBody, null, 2)}</div>
+</div>`;
+
+      consoleDiv.innerHTML = logHtml + consoleDiv.innerHTML;
+    }
+
+    function getStatusText(status) {
+      const texts = { 200: 'OK', 201: 'Created', 400: 'Bad Request', 401: 'Unauthorized', 409: 'Conflict', 500: 'Internal Server Error' };
+      return texts[status] || 'Unknown';
+    }
+
+    function clearConsole() {
+      document.getElementById('console').innerHTML = '<div class="cli-prompt"># Waiting for requests...</div>';
+    }
+
+    function clearToken() {
+      localStorage.removeItem('token');
+      document.getElementById('token-box').style.display = 'none';
+      document.getElementById('jwt-token').innerText = '';
+      logToConsole('LOCAL', 'Token storage cleared', null, 200, { message: 'Auth token deleted from browser storage' });
+    }
+
+    // API Handlers
+    async function handleRegister(event) {
+      event.preventDefault();
+      
+      const requestData = {
+        full_name: document.getElementById('reg-name').value,
+        email: document.getElementById('reg-email').value,
+        password: document.getElementById('reg-password').value,
+        phone: document.getElementById('reg-phone').value || undefined,
+        legal_id_type: document.getElementById('reg-id-type').value,
+        legal_id: document.getElementById('reg-id').value || undefined,
+        role: document.getElementById('reg-role').value
+      };
+
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestData)
+        });
+
+        const data = await response.json();
+        
+        // Scrub password from console request log
+        const consoleRequest = { ...requestData, password: '••••••••' };
+        logToConsole('POST', '/api/auth/register', consoleRequest, response.status, data);
+
+        if (response.ok) {
+          alert('User registered successfully! You can now log in.');
+          document.getElementById('registerForm').reset();
+          switchTab('tab-login');
+        } else {
+          alert(`Registration failed: ${data.message}`);
+        }
+      } catch (error) {
+        logToConsole('POST', '/api/auth/register', { error: error.message }, 500, { success: false, message: error.message });
+      }
+    }
+
+    async function handleLogin(event) {
+      event.preventDefault();
+      
+      const email = document.getElementById('log-email').value;
+      const password = document.getElementById('log-password').value;
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+        logToConsole('POST', '/api/auth/login', { email, password: '••••••••' }, response.status, data);
+
+        if (response.ok && data.data && data.data.token) {
+          localStorage.setItem('token', data.data.token);
+          document.getElementById('token-box').style.display = 'block';
+          document.getElementById('jwt-token').innerText = data.data.token;
+          alert('Login successful! Access token stored.');
+          document.getElementById('loginForm').reset();
+        } else {
+          alert(`Login failed: ${data.message}`);
+        }
+      } catch (error) {
+        logToConsole('POST', '/api/auth/login', { error: error.message }, 500, { success: false, message: error.message });
+      }
+    }
+
+    async function fetchProfile() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('No JWT access token found. Please log in first.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/auth/me', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+        logToConsole('GET', '/api/auth/me', null, response.status, data);
+
+        if (!response.ok) {
+          alert(`Failed to fetch profile: ${data.message}`);
+          if (response.status === 401) {
+            clearToken();
+          }
+        }
+      } catch (error) {
+        logToConsole('GET', '/api/auth/me', null, 500, { success: false, message: error.message });
+      }
+    }
+
+    // Auto load current token in UI on page load
+    window.onload = () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        document.getElementById('token-box').style.display = 'block';
+        document.getElementById('jwt-token').innerText = token;
+      }
+    };
+  </script>
+</body>
+</html>
