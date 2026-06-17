@@ -50,7 +50,7 @@ app.use((err, req, res, next) => {
 
 // Start server and verify Database connection
 const server = app.listen(PORT, async () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${PORT}`);
   
   // Verify database connectivity
   try {
